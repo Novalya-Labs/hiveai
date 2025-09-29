@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "docs:dev": "xyd",
-    "docs:build": "xyd build",
+    "docs:dev": "mint dev",
+    "docs:build": "mint build",
     "build": "tsc",
     "test": "vitest",
     "clean": "rm -rf dist node_modules .xyd",

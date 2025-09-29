@@ -1,0 +1,51 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "HiveAI",
+  "description": "HiveAI is a framework for building AI agents",
+  "icons": {
+    "library": "lucide"
+  },
+  "colors": {
+    "primary": "#ff0000"
+  },
+  "favicon": "./docs/assets/favicon.ico",
+  "logo": {
+    "light": "./docs/assets/favicon.ico",
+    "dark": "./docs/assets/favicon.ico"
+  },
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "navigation": {
+    "version": "0.1.0",
+    "languages": [
+      {
+        "language": "en",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": ["./docs/en/get-started/overview", "./docs/en/get-started/quickstart"]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/ogogus21",
+      "github": "https://github.com/Novalya-Labs/hiveai"
+    }
+  },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude"]
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "I can't be found",
+      "description": "What ever **happened** to this _page_?"
+    }
+  }
+}
