@@ -3,6 +3,9 @@
   "description": "HiveAI is a framework for building AI agents",
   "version": "0.1.0",
   "main": "index.js",
+  "bin": {
+    "hiveai": "./dist/cli/index.js"
+  },
   "scripts": {
     "docs:dev": "mint dev",
     "docs:build": "mint build",
@@ -21,11 +24,13 @@
   "license": "ISC",
   "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a",
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
-    "typescript": "^5.9.2",
+    "@biomejs/biome": "^2.2.5",
+    "@types/node": "^24.6.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "dotenv": "^17.2.2"
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.11"
   }
 }

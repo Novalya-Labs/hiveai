@@ -1,2 +1,12 @@
 # Dependencies
 node_modules/
+
+# Playground
+playground/
+teams/
+
+# Env
+.env
+
+# Dist
+dist/
