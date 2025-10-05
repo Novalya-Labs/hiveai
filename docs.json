@@ -55,11 +55,7 @@
           },
           {
             "group": "LLM Providers",
-            "pages": [
-              "./docs/en/llms/openai",
-              "./docs/en/llms/anthropic",
-              "./docs/en/llms/mistral"
-            ]
+            "pages": ["./docs/en/llms/openai", "./docs/en/llms/anthropic", "./docs/en/llms/mistral"]
           },
           {
             "group": "Tools",
