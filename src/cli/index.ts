@@ -18,7 +18,7 @@ async function main() {
 
   if (cmd === 'agent' && subcmd === 'add') return addAgentCommand(args[0]);
 
-  if (cmd === 'teams' && subcmd === 'add') return addTeamCommand(args[0]);
+  if (cmd === 'team' && subcmd === 'add') return addTeamCommand(args[0]);
 
   console.error(`Unknown command: ${cmd}`);
   helpCommand();

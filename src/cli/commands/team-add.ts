@@ -12,13 +12,13 @@ export function addTeamCommand(name?: string) {
   ensureDir(path.join(teamDir, 'output'));
 
   const exampleAgent = `name: example-agent
-    goals:
-      - Example goal
-    tasks:
-      - Example task
-    llm: mistral
-    tools:
-      - web-scraper
+goals:
+  - Example goal
+tasks:
+  - Example task
+llm: mistral
+tools:
+  - web-scraper
 `;
 
   const filePath = path.join(teamDir, 'example-agent.yml');

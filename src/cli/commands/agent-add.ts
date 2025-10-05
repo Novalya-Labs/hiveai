@@ -20,14 +20,14 @@ export function addAgentCommand(name?: string) {
   const filePath = path.join(cwd, `${name}.yml`);
 
   const template = `name: ${name}
-    goals:
-      - Describe what this agent must achieve
-    tasks:
-      - Step 1
-      - Step 2
-    llm: mistral
-    tools:
-      - web-scraper
+goals:
+  - Describe what this agent must achieve
+tasks:
+  - Step 1
+  - Step 2
+llm: mistral
+tools:
+  - web-scraper
 `;
 
   const writtenPath = safeWriteFile(filePath, template);
