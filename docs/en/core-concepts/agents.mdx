@@ -1,0 +1,148 @@
+---
+title: "Agents"
+description: "Understanding HiveAI agents and how they work"
+---
+
+# Agents
+
+Agents are the core building blocks of HiveAI. Each agent is an autonomous entity with its own LLM, tools, goals, and tasks.
+
+## What is an Agent?
+
+An agent is defined in a YAML file and consists of:
+
+- **Name**: Unique identifier
+- **LLM Configuration**: Which AI model to use and how
+- **Goals**: What the agent should achieve
+- **Tasks**: How to achieve those goals
+- **Tools**: Optional capabilities (web scraping, file reading, etc.)
+- **Dependencies**: Which agents must run before this one
+
+## Anatomy of an Agent
+
+```yaml
+name: data-analyzer                    # Unique identifier
+description: "Analyzes data files"     # Optional description
+
+llm:                                   # LLM configuration
+  provider: mistral
+  model: mistral-large-latest
+  temperature: 0.7
+  max_tokens: 2000
+
+prompts:                               # Optional custom prompts
+  system: "You are a data analyst"
+  user: "Analyze the data provided"
+
+depends_on: data-collector             # Optional dependency
+
+tools:                                 # Optional tools
+  - file-reader
+  - serializer
+
+goals:                                 # Required: what to achieve
+  - Extract insights from data
+  - Identify patterns
+
+tasks:                                 # Required: how to do it
+  - Load data files
+  - Analyze patterns
+  - Generate report
+
+output_result: analysis.json           # Optional custom output name
+on_error: continue                     # Optional error handling
+```
+
+## Agent Lifecycle
+
+1. **Load**: Orchestrator loads agent from YAML
+2. **Validate**: Schema validation with clear error messages
+3. **Resolve**: Dependencies are resolved
+4. **Execute**: Agent runs with LLM + tools
+5. **Store**: Results saved to memory and file
+
+## Agent Types
+
+### 1. Independent Agents
+No dependencies, run first:
+```yaml
+name: scraper
+# No depends_on field
+```
+
+### 2. Dependent Agents
+Wait for other agents:
+```yaml
+name: analyzer
+depends_on: scraper  # Single dependency
+```
+
+### 3. Multi-Dependent Agents
+Wait for multiple agents:
+```yaml
+name: reporter
+depends_on:
+  - scraper
+  - analyzer
+```
+
+## Configuration Options
+
+<AccordionGroup>
+  <Accordion title="LLM Configuration">
+    Simple or advanced:
+    ```yaml
+    # Simple
+    llm: mistral
+    
+    # Advanced
+    llm:
+      provider: mistral
+      model: mistral-large-latest
+      temperature: 0.7
+      max_tokens: 2000
+      top_p: 0.9
+    ```
+  </Accordion>
+  
+  <Accordion title="Custom Prompts">
+    Override default prompts:
+    ```yaml
+    prompts:
+      system: "Your role and behavior"
+      user: "Your task description with {{ENV_VARS}}"
+    ```
+  </Accordion>
+  
+  <Accordion title="Error Handling">
+    Control pipeline behavior on failure:
+    ```yaml
+    on_error: continue  # or "stop" (default)
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Use descriptive names (data-analyzer, not agent1)
+- Define clear goals and tasks
+- Set appropriate temperature for task type
+- Use dependencies to create logical flow
+
+<Warning>**DON'T:**</Warning>
+- Create circular dependencies
+- Use tabs instead of spaces in YAML
+- Forget required fields (name, llm, goals, tasks)
+- Use same name for multiple agents
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Orchestrator" icon="sitemap" href="/docs/en/core-concepts/orchestrator">
+    Learn how agents are orchestrated
+  </Card>
+  <Card title="Configuration Guide" icon="gear" href="/docs/en/guides/agent-configuration">
+    Complete configuration reference
+  </Card>
+</CardGroup>

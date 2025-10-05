@@ -1,0 +1,166 @@
+---
+title: "Installation"
+description: "Install HiveAI and set up your development environment"
+---
+
+# Installation
+
+Get HiveAI up and running in less than 2 minutes.
+
+## Prerequisites
+
+<Info>
+  **Required:**
+  - Node.js 18+ or 20+
+  - pnpm (recommended) or npm
+</Info>
+
+Check your Node.js version:
+```bash
+node --version
+# Should output v18.x.x or higher
+```
+
+## Install HiveAI
+
+<Tabs>
+  <Tab title="pnpm (Recommended)">
+    ```bash
+    pnpm install hiveai
+    ```
+  </Tab>
+  <Tab title="npm">
+    ```bash
+    npm install hiveai
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add hiveai
+    ```
+  </Tab>
+</Tabs>
+
+## Set Up Environment Variables
+
+Create a `.env` file at your project root:
+
+```bash
+# .env
+OPENAI_API_KEY=your_openai_key_here
+ANTHROPIC_API_KEY=your_anthropic_key_here
+MISTRAL_API_KEY=your_mistral_key_here
+FIRECRAWL_API_KEY=your_firecrawl_key_here  # Optional
+```
+
+<Warning>
+  Never commit your `.env` file to version control! Add it to `.gitignore`.
+</Warning>
+
+## Get API Keys
+
+<Steps>
+  <Step title="OpenAI">
+    1. Go to [platform.openai.com](https://platform.openai.com)
+    2. Create an account or sign in
+    3. Navigate to API Keys
+    4. Create a new secret key
+  </Step>
+  <Step title="Anthropic (Claude)">
+    1. Visit [console.anthropic.com](https://console.anthropic.com)
+    2. Sign up or log in
+    3. Go to API Keys section
+    4. Generate a new key
+  </Step>
+  <Step title="Mistral AI">
+    1. Head to [console.mistral.ai](https://console.mistral.ai)
+    2. Create an account
+    3. Navigate to API Keys
+    4. Create your key
+  </Step>
+  <Step title="Firecrawl (Optional)">
+    1. Go to [firecrawl.dev](https://firecrawl.dev)
+    2. Sign up for an account
+    3. Get your API key from dashboard
+  </Step>
+</Steps>
+
+## Verify Installation
+
+Create a simple test to verify everything works:
+
+```bash
+# Create test directory
+mkdir -p teams/test-team
+
+# Create a test agent
+cat > teams/test-team/hello.yml << EOF
+name: hello-agent
+llm: mistral
+goals:
+  - Say hello world
+tasks:
+  - Generate a greeting message
+EOF
+
+# Run the test
+npx hiveai run test-team
+```
+
+<Check>
+If you see `✅ Completed` in the output, congratulations! HiveAI is ready to use.
+</Check>
+
+## Project Structure
+
+After installation, your project should look like this:
+
+```
+my-project/
+├── .env                 # API keys (don't commit!)
+├── package.json
+├── node_modules/
+└── teams/               # Your agent teams
+    └── test-team/
+        ├── hello.yml    # Agent configuration
+        └── output/      # Generated results
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/docs/en/get-started/quickstart">
+    Build your first agent in 5 minutes
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/docs/en/core-concepts/agents">
+    Learn how agents work
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Module not found error">
+    Make sure you're using Node.js 18+ and have installed dependencies:
+    ```bash
+    node --version  # Check version
+    pnpm install    # Reinstall dependencies
+    ```
+  </Accordion>
+  
+  <Accordion title="API key errors">
+    Verify your `.env` file is in the project root and contains valid keys:
+    ```bash
+    cat .env  # Check file contents
+    ```
+  </Accordion>
+  
+  <Accordion title="Permission denied">
+    Make sure the CLI is executable:
+    ```bash
+    chmod +x node_modules/.bin/hiveai
+    ```
+  </Accordion>
+</AccordionGroup>
+
+Need more help? Join our [GitHub Discussions](https://github.com/Novalya-Labs/hiveai/discussions).

@@ -1,15 +1,10 @@
 import fs from 'node:fs';
 import type { Tool } from '@/tools/index.js';
 
-/**
- * Tool to serialize data to a CSV file
- */
 export class SerializerTool implements Tool {
   name = 'serializer';
+  description = 'Use it to convert data arrays to CSV format and save to a file. Provide data and an output path.';
 
-  /**
-   * Execute the serializer tool
-   */
   async execute(input: { data: unknown[]; outputPath: string }): Promise<unknown> {
     const csv = this.toCSV(input.data);
     fs.writeFileSync(input.outputPath, csv, 'utf8');

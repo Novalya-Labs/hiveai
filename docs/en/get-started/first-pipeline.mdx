@@ -1,0 +1,309 @@
+---
+title: "Your First Pipeline"
+description: "Build a multi-agent pipeline with dependencies and shared memory"
+---
+
+# Your First Pipeline
+
+Learn how to build a multi-agent pipeline where agents work together sequentially.
+
+## What You'll Build
+
+A 3-agent research pipeline that:
+1. **Researcher** - Finds information about a topic
+2. **Analyzer** - Extracts insights from the research
+3. **Reporter** - Creates a final report combining all findings
+
+```
+Researcher → Analyzer → Reporter
+```
+
+## Step 1: Create the Team
+
+```bash
+mkdir -p teams/research-pipeline
+cd teams/research-pipeline
+```
+
+## Step 2: Create Agent 1 - Researcher
+
+Create `1-researcher.yml`:
+
+```yaml teams/research-pipeline/1-researcher.yml
+name: topic-researcher
+description: "Researches a topic and identifies key themes"
+
+llm:
+  provider: mistral
+  temperature: 0.5
+  max_tokens: 1500
+
+prompts:
+  system: "You are a research analyst specialized in identifying key themes."
+  user: |
+    Analyze the topic of "AI Agent Orchestration" and identify:
+    1. Key concepts
+    2. Main use cases
+    3. Challenges
+    
+    Return JSON format with:
+    - concepts: array of concepts
+    - use_cases: array of use cases
+    - challenges: array of challenges
+
+goals:
+  - Identify key themes
+  - Provide structured analysis
+
+tasks:
+  - Analyze the topic
+  - Extract key concepts
+```
+
+<Info>
+  This agent has **no dependencies** - it runs first.
+</Info>
+
+## Step 3: Create Agent 2 - Analyzer
+
+Create `2-analyzer.yml`:
+
+```yaml teams/research-pipeline/2-analyzer.yml
+name: insight-extractor
+description: "Extracts actionable insights from research"
+
+depends_on: topic-researcher  # 👈 Waits for researcher
+
+llm:
+  provider: mistral
+  temperature: 0.6
+  max_tokens: 2000
+
+prompts:
+  system: "You are a strategic analyst who extracts actionable insights."
+  user: |
+    Based on the research provided, extract:
+    1. Top 3 opportunities
+    2. Top 3 risks
+    3. Priority focus areas
+    
+    Return JSON with:
+    - opportunities: array
+    - risks: array
+    - priorities: array
+
+goals:
+  - Extract actionable insights
+  - Identify opportunities and risks
+
+tasks:
+  - Analyze research results
+  - Extract opportunities
+  - Identify risks
+```
+
+<Tip>
+  The `depends_on` field tells HiveAI to wait for `topic-researcher` to complete.
+  The researcher's results are **automatically injected** into this agent's prompt!
+</Tip>
+
+## Step 4: Create Agent 3 - Reporter
+
+Create `3-reporter.yml`:
+
+```yaml teams/research-pipeline/3-reporter.yml
+name: report-synthesizer
+description: "Creates final synthesis report"
+
+depends_on:
+  - topic-researcher
+  - insight-extractor  # 👈 Multiple dependencies
+
+llm:
+  provider: mistral
+  temperature: 0.4
+  max_tokens: 2500
+
+prompts:
+  system: "You are a senior analyst who creates comprehensive reports."
+  user: |
+    Create a synthesis report combining:
+    - Initial research findings
+    - Extracted insights
+    
+    Include:
+    1. Executive Summary
+    2. Key Findings
+    3. Recommendations
+    4. Next Steps
+    
+    Return JSON with these fields.
+
+goals:
+  - Create comprehensive report
+  - Combine all insights
+
+tasks:
+  - Review all outputs
+  - Synthesize findings
+  - Create recommendations
+
+output_result: final-report.json  # 👈 Custom output filename
+```
+
+<Check>
+  This agent depends on **both** previous agents and will receive their results automatically!
+</Check>
+
+## Step 5: Run the Pipeline
+
+```bash
+npx hiveai run research-pipeline
+```
+
+Watch the magic happen:
+
+```
+🚀 Starting pipeline with 3 agent(s)...
+
+[1/3] 🤖 Running agent: topic-researcher
+   📝 Researches a topic and identifies key themes
+   🧠 LLM: mistral (mistral-large-latest)
+   📨 Sending prompt (279 chars)...
+   ✅ Completed in 22.7s
+
+[2/3] 🤖 Running agent: insight-extractor
+   Dependencies: topic-researcher
+   📦 Loaded results from: topic-researcher  # 👈 Automatic!
+   📨 Sending prompt (10491 chars)...
+   ✅ Completed in 36.9s
+
+[3/3] 🤖 Running agent: report-synthesizer
+   Dependencies: topic-researcher, insight-extractor
+   📦 Loaded results from: topic-researcher, insight-extractor  # 👈 Both!
+   📨 Sending prompt (25031 chars)...
+   💾 Output saved → final-report.json
+   ✅ Completed in 32.6s
+
+============================================================
+📊 Pipeline Summary
+============================================================
+Total agents: 3
+✅ Successful: 3
+⏱️  Total duration: 92.2s
+============================================================
+```
+
+## Step 6: Check the Results
+
+```bash
+ls teams/research-pipeline/output/
+# final-report.json
+# topic-researcher.json
+# insight-extractor.json
+```
+
+View the final report:
+```bash
+cat teams/research-pipeline/output/final-report.json
+```
+
+## How It Works
+
+### 1. Dependency Resolution
+
+HiveAI automatically figures out the execution order:
+
+```
+topic-researcher (no deps)
+    ↓
+insight-extractor (depends_on: topic-researcher)
+    ↓
+report-synthesizer (depends_on: [topic-researcher, insight-extractor])
+```
+
+### 2. Automatic Data Injection
+
+When `insight-extractor` runs, its prompt automatically includes:
+
+```
+Results from previous agents:
+
+### topic-researcher:
+{
+  "concepts": [...],
+  "use_cases": [...],
+  "challenges": [...]
+}
+
+[Your custom prompt continues...]
+```
+
+### 3. Shared Memory
+
+All results are stored in `cache.json` for the entire pipeline session.
+
+## Advanced Patterns
+
+### Multiple Dependencies
+
+```yaml
+depends_on:
+  - agent-1
+  - agent-2
+  - agent-3  # Waits for all three
+```
+
+### Error Handling
+
+```yaml
+name: resilient-agent
+on_error: continue  # 👈 Don't stop pipeline if this fails
+```
+
+### Environment Variables
+
+```yaml
+prompts:
+  user: "Analyze {{COMPANY_NAME}} in {{REGION}}"  # From .env
+```
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Add Tools" icon="wrench" href="/docs/en/tools/built-in-tools">
+    Give agents access to file readers, web scrapers, and more
+  </Card>
+  <Card title="Custom Prompts" icon="message" href="/docs/en/guides/custom-prompts">
+    Master advanced prompting techniques
+  </Card>
+  <Card title="Error Handling" icon="shield" href="/docs/en/guides/error-handling">
+    Build robust pipelines that handle failures
+  </Card>
+  <Card title="Real Examples" icon="rocket" href="/docs/en/examples/research-pipeline">
+    See production-ready pipelines
+  </Card>
+</CardGroup>
+
+## Common Patterns
+
+<Tabs>
+  <Tab title="Sequential Processing">
+    ```
+    Scraper → Processor → Validator → Exporter
+    ```
+  </Tab>
+  <Tab title="Fan-Out Pattern">
+    ```
+         ┌─ Agent 2
+    Agent 1 ─┼─ Agent 3 ─→ Agent 5 (waits for 2,3,4)
+         └─ Agent 4
+    ```
+  </Tab>
+  <Tab title="Conditional Flow">
+    ```yaml
+    name: optional-step
+    on_error: continue  # Pipeline continues even if this fails
+    ```
+  </Tab>
+</Tabs>

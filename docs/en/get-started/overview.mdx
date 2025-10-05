@@ -1,4 +1,151 @@
 ---
 title: "Overview"
-description: "What's HiveAI ?"
+description: "What is HiveAI and why should you use it?"
 ---
+
+# What is HiveAI?
+
+HiveAI is a **TypeScript framework for building autonomous AI agents** that work together in teams. Think of it as an orchestration layer that lets multiple AI agents collaborate, share data, and execute complex workflows.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Multi-LLM Support" icon="brain">
+    Use OpenAI, Anthropic (Claude), or Mistral AI in a single pipeline
+  </Card>
+  <Card title="Agent Orchestration" icon="sitemap">
+    Automatic dependency resolution and sequential execution
+  </Card>
+  <Card title="Shared Memory" icon="database">
+    Agents can access results from previous agents automatically
+  </Card>
+  <Card title="Function Calling" icon="wrench">
+    Built-in tools system with native function calling support
+  </Card>
+  <Card title="Zero Heavy Dependencies" icon="feather">
+    Native fetch-based LLM clients, custom YAML parser
+  </Card>
+  <Card title="Developer Experience" icon="sparkles">
+    YAML configuration, detailed logs, clear error messages
+  </Card>
+</CardGroup>
+
+## Why HiveAI?
+
+### Problem
+
+Building multi-agent systems is complex:
+- Managing agent dependencies and execution order
+- Sharing data between agents
+- Handling multiple LLM providers
+- Configuring prompts and tools
+- Debugging agent interactions
+
+### Solution
+
+HiveAI provides:
+```yaml
+# Simple YAML configuration
+name: research-agent
+llm:
+  provider: mistral
+  temperature: 0.7
+depends_on: data-collector
+tools:
+  - firecrawl
+  - file-reader
+goals:
+  - Extract insights from collected data
+```
+
+And HiveAI automatically:
+- ✅ Resolves execution order
+- ✅ Injects previous results in prompts
+- ✅ Manages tool calls
+- ✅ Handles errors and retries
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion title="Research & Data Analysis">
+    Chain agents to research topics, extract insights, and generate reports
+  </Accordion>
+  <Accordion title="Web Scraping Pipelines">
+    Scrape websites, process data, validate results, and export to formats
+  </Accordion>
+  <Accordion title="Content Generation">
+    Research topics, generate content, review quality, and publish
+  </Accordion>
+  <Accordion title="Data Processing">
+    Extract data from files, transform formats, enrich with APIs, and save results
+  </Accordion>
+</AccordionGroup>
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Orchestrator                      │
+│  - Loads agents from YAML                          │
+│  - Resolves dependencies                           │
+│  - Manages execution order                         │
+└─────────────────────────────────────────────────────┘
+                        │
+        ┌───────────────┼───────────────┐
+        ▼               ▼               ▼
+   ┌─────────┐    ┌─────────┐    ┌─────────┐
+   │ Agent 1 │    │ Agent 2 │    │ Agent 3 │
+   │ (OpenAI)│───▶│(Mistral)│───▶│ (Claude)│
+   └─────────┘    └─────────┘    └─────────┘
+        │               │               │
+        └───────────────┼───────────────┘
+                        ▼
+                ┌──────────────┐
+                │Shared Memory │
+                │  (cache.json)│
+                └──────────────┘
+```
+
+## Quick Example
+
+```yaml
+# teams/my-pipeline/researcher.yml
+name: researcher
+llm: mistral
+tools:
+  - firecrawl
+goals:
+  - Scrape and analyze website content
+tasks:
+  - Extract key information
+  - Summarize findings
+```
+
+```bash
+# Run the pipeline
+hiveai run my-pipeline
+
+# Output
+🚀 Starting pipeline with 1 agent(s)...
+[1/1] 🤖 Running agent: researcher
+   🧠 LLM: mistral
+   🔧 Tools: firecrawl
+   ✅ Completed in 15.3s
+```
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/docs/en/get-started/installation">
+    Install HiveAI in 2 minutes
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/docs/en/get-started/quickstart">
+    Build your first agent
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/docs/en/core-concepts/agents">
+    Understand how HiveAI works
+  </Card>
+  <Card title="Examples" icon="code" href="/docs/en/examples/research-pipeline">
+    See real-world pipelines
+  </Card>
+</CardGroup>

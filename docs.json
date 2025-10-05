@@ -25,8 +25,66 @@
         "language": "en",
         "groups": [
           {
-            "group": "Getting started",
-            "pages": ["./docs/en/get-started/overview", "./docs/en/get-started/quickstart"]
+            "group": "Getting Started",
+            "pages": [
+              "./docs/en/get-started/overview",
+              "./docs/en/get-started/installation",
+              "./docs/en/get-started/quickstart",
+              "./docs/en/get-started/first-pipeline"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "./docs/en/core-concepts/agents",
+              "./docs/en/core-concepts/orchestrator",
+              "./docs/en/core-concepts/memory",
+              "./docs/en/core-concepts/tools",
+              "./docs/en/core-concepts/llms"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "./docs/en/guides/agent-configuration",
+              "./docs/en/guides/custom-prompts",
+              "./docs/en/guides/dependencies",
+              "./docs/en/guides/error-handling",
+              "./docs/en/guides/environment-variables"
+            ]
+          },
+          {
+            "group": "LLM Providers",
+            "pages": [
+              "./docs/en/llms/openai",
+              "./docs/en/llms/anthropic",
+              "./docs/en/llms/mistral"
+            ]
+          },
+          {
+            "group": "Tools",
+            "pages": [
+              "./docs/en/tools/built-in-tools",
+              "./docs/en/tools/file-reader",
+              "./docs/en/tools/firecrawl",
+              "./docs/en/tools/custom-tools"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "./docs/en/examples/research-pipeline",
+              "./docs/en/examples/data-processing",
+              "./docs/en/examples/web-scraping"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "./docs/en/api-reference/cli",
+              "./docs/en/api-reference/orchestrator",
+              "./docs/en/api-reference/agent-runner"
+            ]
           }
         ]
       }

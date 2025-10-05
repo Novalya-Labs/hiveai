@@ -1,18 +1,13 @@
 import { ClaudeClient } from '@/llms/claude-client.js';
 import { MistralClient } from '@/llms/mistral-client.js';
 import { OpenAIClient } from '@/llms/openai-client.js';
+import type { LLMContext, LLMResponse } from '@/llms/types.js';
 import type { AgentConfig } from '@/types/agent.js';
 
-/**
- * LLM client interface
- */
 export interface LLMClient {
-  generate(prompt: string, context?: Record<string, unknown>): Promise<unknown>;
+  generate(prompt: string, context?: LLMContext): Promise<LLMResponse>;
 }
 
-/**
- * Get an LLM client by type
- */
 export function getLLM(type: AgentConfig['llm']): LLMClient {
   switch (type) {
     case 'openai':

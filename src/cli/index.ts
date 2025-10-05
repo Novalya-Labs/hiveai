@@ -1,8 +1,11 @@
 #!/usr/bin/env node
+import { config } from 'dotenv';
 import { addAgentCommand } from '@/cli/commands/agent-add.js';
 import { helpCommand } from '@/cli/commands/help.js';
 import { runCommand } from '@/cli/commands/run.js';
 import { addTeamCommand } from '@/cli/commands/team-add.js';
+
+config();
 
 async function main() {
   const [, , cmd, subcmd, ...args] = process.argv;
