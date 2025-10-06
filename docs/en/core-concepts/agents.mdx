@@ -1,148 +1,237 @@
 ---
 title: "Agents"
-description: "Understanding HiveAI agents and how they work"
+description: "Understanding HiveAI agents"
 ---
 
 # Agents
 
-Agents are the core building blocks of HiveAI. Each agent is an autonomous entity with its own LLM, tools, goals, and tasks.
+Agents are the **core building blocks** of HiveAI. Each agent is an autonomous entity with its own LLM, tools, goals, and tasks.
 
 ## What is an Agent?
 
-An agent is defined in a YAML file and consists of:
+An agent is defined by:
 
-- **Name**: Unique identifier
-- **LLM Configuration**: Which AI model to use and how
-- **Goals**: What the agent should achieve
-- **Tasks**: How to achieve those goals
-- **Tools**: Optional capabilities (web scraping, file reading, etc.)
-- **Dependencies**: Which agents must run before this one
-
-## Anatomy of an Agent
-
-```yaml
-name: data-analyzer                    # Unique identifier
-description: "Analyzes data files"     # Optional description
-
-llm:                                   # LLM configuration
-  provider: mistral
-  model: mistral-large-latest
-  temperature: 0.7
-  max_tokens: 2000
-
-prompts:                               # Optional custom prompts
-  system: "You are a data analyst"
-  user: "Analyze the data provided"
-
-depends_on: data-collector             # Optional dependency
-
-tools:                                 # Optional tools
-  - file-reader
-  - serializer
-
-goals:                                 # Required: what to achieve
-  - Extract insights from data
-  - Identify patterns
-
-tasks:                                 # Required: how to do it
-  - Load data files
-  - Analyze patterns
-  - Generate report
-
-output_result: analysis.json           # Optional custom output name
-on_error: continue                     # Optional error handling
-```
+1. **Identity**: Name and description
+2. **Brain**: LLM configuration (provider, model, temperature)
+3. **Capabilities**: Tools it can use
+4. **Purpose**: Goals to achieve
+5. **Actions**: Tasks to execute
+6. **Dependencies**: Other agents it relies on
 
 ## Agent Lifecycle
 
-1. **Load**: Orchestrator loads agent from YAML
-2. **Validate**: Schema validation with clear error messages
-3. **Resolve**: Dependencies are resolved
-4. **Execute**: Agent runs with LLM + tools
-5. **Store**: Results saved to memory and file
+```
+1. Load configuration (YAML)
+   ↓
+2. Validate schema
+   ↓
+3. Wait for dependencies (if any)
+   ↓
+4. Build prompt (goals + tasks + tools)
+   ↓
+5. Call LLM
+   ↓
+6. Execute tool calls (if any)
+   ↓
+7. Return result
+   ↓
+8. Store in memory
+```
+
+## Basic Agent
+
+```yaml
+name: analyst
+llm: mistral
+goals:
+  - Analyze market trends
+tasks:
+  - Extract key insights from data
+```
+
+That's the minimum! HiveAI handles the rest.
+
+## Advanced Agent
+
+```yaml
+name: research-agent
+description: "Specialized agent for market research"
+
+llm:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.7
+  max_tokens: 2000
+
+prompts:
+  system: "You are a senior market analyst"
+  user: "Research {{TOPIC}} and provide insights"
+
+tools:
+  - firecrawl
+  - file-reader
+
+goals:
+  - Extract key information from websites
+  - Analyze competitor data
+
+tasks:
+  - Scrape competitor websites
+  - Parse data files
+  - Synthesize findings
+
+depends_on: data-collector
+output_result: research-report.json
+on_error: continue
+```
 
 ## Agent Types
 
-### 1. Independent Agents
-No dependencies, run first:
+### 1. Independent Agent
+
+No dependencies, runs first:
+
 ```yaml
-name: scraper
-# No depends_on field
+name: data-collector
+llm: mistral
+goals: [Collect data]
+tasks: [Scrape sources]
 ```
 
-### 2. Dependent Agents
-Wait for other agents:
+### 2. Dependent Agent
+
+Waits for other agents:
+
 ```yaml
 name: analyzer
-depends_on: scraper  # Single dependency
+depends_on: data-collector  # Waits for data-collector
+goals: [Analyze collected data]
 ```
 
-### 3. Multi-Dependent Agents
-Wait for multiple agents:
+### 3. Convergence Agent
+
+Waits for multiple agents:
+
 ```yaml
-name: reporter
+name: synthesizer
 depends_on:
-  - scraper
+  - data-collector
   - analyzer
+  - validator
+goals: [Create final report]
 ```
 
-## Configuration Options
+## Agent Communication
 
-<AccordionGroup>
-  <Accordion title="LLM Configuration">
-    Simple or advanced:
-    ```yaml
-    # Simple
-    llm: mistral
-    
-    # Advanced
-    llm:
-      provider: mistral
-      model: mistral-large-latest
-      temperature: 0.7
-      max_tokens: 2000
-      top_p: 0.9
-    ```
-  </Accordion>
-  
-  <Accordion title="Custom Prompts">
-    Override default prompts:
-    ```yaml
-    prompts:
-      system: "Your role and behavior"
-      user: "Your task description with {{ENV_VARS}}"
-    ```
-  </Accordion>
-  
-  <Accordion title="Error Handling">
-    Control pipeline behavior on failure:
-    ```yaml
-    on_error: continue  # or "stop" (default)
-    ```
-  </Accordion>
-</AccordionGroup>
+Agents communicate through **shared memory**:
+
+```
+Agent 1 (researcher)
+  ↓ saves result
+Memory
+  ↓ injects result
+Agent 2 (analyzer)
+```
+
+The analyzer automatically receives:
+
+```
+Results from previous agents:
+
+### researcher:
+{
+  "findings": [...],
+  "insights": [...]
+}
+
+[Analyzer's custom prompt continues...]
+```
+
+## Goals vs Tasks
+
+| Goals | Tasks |
+|-------|-------|
+| **What** to achieve | **How** to achieve it |
+| High-level outcomes | Concrete actions |
+| "Analyze trends" | "Parse CSV files" |
+| "Extract insights" | "Call API endpoints" |
+
+Both are included in the agent's prompt to guide the LLM.
+
+## Agent Configuration
+
+Full reference: [Agent Configuration Guide](/docs/en/guides/agent-configuration)
+
+Key fields:
+
+- `name`: Unique identifier (required)
+- `llm`: LLM configuration (required)
+- `goals`: What to achieve (required, min 1)
+- `tasks`: How to do it (required, min 1)
+- `description`: Agent description (optional)
+- `prompts`: Custom system/user prompts (optional)
+- `tools`: Tool names (optional)
+- `depends_on`: Dependencies (optional)
+- `output_result`: Custom output file (optional)
+- `on_error`: Error behavior (optional, `stop` or `continue`)
 
 ## Best Practices
 
 <Check>**DO:**</Check>
-- Use descriptive names (data-analyzer, not agent1)
+- Keep agents focused on one responsibility
+- Use descriptive names
 - Define clear goals and tasks
-- Set appropriate temperature for task type
-- Use dependencies to create logical flow
+- Test agents independently before chaining
+- Use appropriate temperature for task type
 
 <Warning>**DON'T:**</Warning>
-- Create circular dependencies
-- Use tabs instead of spaces in YAML
+- Make agents do too many things
 - Forget required fields (name, llm, goals, tasks)
-- Use same name for multiple agents
+- Create circular dependencies
+- Use tabs in YAML (use 2 spaces)
+
+## Agent Output
+
+Agents save results to:
+
+```
+teams/your-team/output/
+  ├── agent-1.json
+  ├── agent-2.json
+  └── agent-3.json
+```
+
+Each file contains:
+
+```json
+{
+  "content": "Agent's main response",
+  "toolCalls": [
+    {
+      "name": "file-reader",
+      "input": {...},
+      "result": {...}
+    }
+  ]
+}
+```
 
 ## Next Steps
 
-<CardGroup cols={2}>
-  <Card title="Orchestrator" icon="sitemap" href="/docs/en/core-concepts/orchestrator">
-    Learn how agents are orchestrated
+<CardGroup cols={3}>
+  <Card title="Orchestrator" icon="brain" href="/docs/en/core-concepts/orchestrator">
+    How agents are orchestrated
   </Card>
-  <Card title="Configuration Guide" icon="gear" href="/docs/en/guides/agent-configuration">
-    Complete configuration reference
+  <Card title="Memory" icon="database" href="/docs/en/core-concepts/memory">
+    How agents share data
+  </Card>
+  <Card title="Tools" icon="wrench" href="/docs/en/core-concepts/tools">
+    Giving agents capabilities
   </Card>
 </CardGroup>
+
+---
+
+<Note>
+**Quick tip**: Start with a simple agent (just name, llm, goals, tasks) and add complexity gradually as you learn what works.
+</Note>

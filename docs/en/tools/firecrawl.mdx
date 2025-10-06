@@ -1,0 +1,63 @@
+---
+title: "Firecrawl"
+description: "Web scraping tool"
+---
+
+# Firecrawl Tool
+
+Scrape websites cleanly with Firecrawl API.
+
+## Setup
+
+```bash
+# .env
+FIRECRAWL_API_KEY=fc-...
+```
+
+Get your key: [firecrawl.dev](https://firecrawl.dev)
+
+## Usage
+
+```yaml
+tools:
+  - firecrawl
+```
+
+## LLM Usage
+
+The LLM can call:
+
+```json
+{
+  "tool": "firecrawl",
+  "input": {
+    "url": "https://example.com",
+    "format": "markdown"
+  }
+}
+```
+
+Result:
+
+```json
+{
+  "url": "https://example.com",
+  "content": "# Title\n\nClean content...",
+  "metadata": {
+    "title": "Page Title",
+    "description": "..."
+  }
+}
+```
+
+## Example
+
+```yaml
+name: web-researcher
+tools:
+  - firecrawl
+goals:
+  - Research competitor websites
+tasks:
+  - Scrape and analyze content
+```

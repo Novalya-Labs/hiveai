@@ -1,0 +1,51 @@
+---
+title: "OpenAI"
+description: "Using OpenAI models in HiveAI"
+---
+
+# OpenAI Configuration
+
+Use GPT models (GPT-4o, GPT-4o-mini) in your agents.
+
+## Configuration
+
+```yaml
+llm:
+  provider: openai
+  model: gpt-4o-mini        # or gpt-4o, gpt-4-turbo
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 0.9
+```
+
+## Models
+
+| Model | Best For | Cost |
+|-------|----------|------|
+| gpt-4o-mini | General tasks, fast | $ |
+| gpt-4o | Complex reasoning | $$ |
+| gpt-4-turbo | Long contexts | $$$ |
+
+## API Key
+
+```bash
+# .env
+OPENAI_API_KEY=sk-...
+```
+
+Get your key: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+## Function Calling
+
+Full support for OpenAI function calling with tools.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Anthropic" href="/docs/en/llms/anthropic">
+    Claude configuration
+  </Card>
+  <Card title="Mistral" href="/docs/en/llms/mistral">
+    Mistral configuration
+  </Card>
+</CardGroup>

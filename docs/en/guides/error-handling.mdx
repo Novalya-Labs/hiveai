@@ -1,0 +1,61 @@
+---
+title: "Error Handling"
+description: "Build resilient pipelines"
+---
+
+# Error Handling
+
+Build robust pipelines that handle failures gracefully.
+
+## Default Behavior
+
+By default, pipelines **stop on first error**:
+
+```
+Agent 1 ✅ Success
+Agent 2 ❌ Failed
+Agent 3 ⏭️  Skipped (not run)
+```
+
+## Continue on Error
+
+```yaml
+name: optional-analytics
+on_error: continue  # Don't stop pipeline
+```
+
+Result:
+```
+Agent 1 ✅ Success
+Agent 2 ❌ Failed (on_error: continue)
+Agent 3 ✅ Success (runs anyway)
+```
+
+## Retry Logic
+
+All LLM calls have **automatic retry** (3 attempts):
+- Exponential backoff (1s, 2s, 3s)
+- Works for all providers (OpenAI, Claude, Mistral)
+
+## Error Messages
+
+Clear errors from HiveAI:
+
+```
+❌ Failed: Mistral API failed after 3 attempts: 401 Unauthorized
+
+Check your MISTRAL_API_KEY in .env file
+```
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Use `on_error: continue` for optional steps
+- Test agents individually first
+- Monitor error logs
+- Have fallback agents
+
+<Warning>**DON'T:**</Warning>
+- Ignore errors silently
+- Assume all agents will succeed
+- Skip error testing

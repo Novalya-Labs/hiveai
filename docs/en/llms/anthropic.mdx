@@ -1,0 +1,39 @@
+---
+title: "Anthropic (Claude)"
+description: "Using Claude models in HiveAI"
+---
+
+# Anthropic Claude
+
+Use Claude models for advanced reasoning and long contexts.
+
+## Configuration
+
+```yaml
+llm:
+  provider: claude
+  model: claude-3-5-sonnet-20241022
+  temperature: 0.6
+  max_tokens: 4000
+```
+
+## Models
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| claude-3-5-sonnet | 200K | Balanced performance |
+| claude-3-opus | 200K | Highest intelligence |
+| claude-3-haiku | 200K | Fast, affordable |
+
+## API Key
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Get your key: [console.anthropic.com](https://console.anthropic.com)
+
+## Tool Use
+
+Full support for Claude's tool use capabilities.

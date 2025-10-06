@@ -1,0 +1,65 @@
+---
+title: "Environment Variables"
+description: "Using environment variables in HiveAI"
+---
+
+# Environment Variables
+
+Use environment variables for API keys, configuration, and dynamic prompts.
+
+## Setup
+
+Create `.env` in project root:
+
+```bash
+# LLM API Keys
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+MISTRAL_API_KEY=...
+
+# Tools
+FIRECRAWL_API_KEY=fc-...
+
+# Custom Variables
+COMPANY_NAME=Tesla
+REGION=Europe
+DATA_SOURCE=sales-data.csv
+```
+
+## In Prompts
+
+Use `{{VAR_NAME}}` syntax:
+
+```yaml
+prompts:
+  user: "Analyze {{COMPANY_NAME}} in {{REGION}}"
+```
+
+Result: "Analyze Tesla in Europe"
+
+## Required Variables
+
+HiveAI requires API keys for LLM providers you use:
+
+- `OPENAI_API_KEY` - For OpenAI/GPT
+- `ANTHROPIC_API_KEY` - For Claude
+- `MISTRAL_API_KEY` - For Mistral
+- `FIRECRAWL_API_KEY` - For Firecrawl tool (optional)
+
+## Security
+
+<Warning>
+**Never commit `.env` to git!**
+
+Add to `.gitignore`:
+```
+.env
+.env.local
+```
+</Warning>
+
+## Next Steps
+
+<Card title="Configuration Guide" href="/docs/en/guides/agent-configuration">
+  Complete configuration reference
+</Card>

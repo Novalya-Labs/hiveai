@@ -1,0 +1,67 @@
+---
+title: "Agent Runner API"
+description: "AgentRunner class reference"
+---
+
+# Agent Runner API
+
+TypeScript API for the AgentRunner class.
+
+## Constructor
+
+```typescript
+const runner = new AgentRunner(
+  agent: AgentConfig,
+  memory: Memory,
+  outputDir: string
+);
+```
+
+## Methods
+
+### `run()`
+
+Execute the agent.
+
+```typescript
+const result = await runner.run();
+```
+
+Returns: `Promise<unknown>` (agent output)
+
+## AgentConfig
+
+```typescript
+interface AgentConfig {
+  name: string;
+  description?: string;
+  llm: string | LLMConfig;
+  prompts?: {
+    system?: string;
+    user?: string;
+  };
+  tools?: string[];
+  goals: string[];
+  tasks: string[];
+  depends_on?: string | string[];
+  output_result?: string;
+  on_error?: 'stop' | 'continue';
+}
+```
+
+## Example
+
+```typescript
+import { AgentRunner, Memory } from 'hiveai';
+
+const agent: AgentConfig = {
+  name: 'analyst',
+  llm: 'mistral',
+  goals: ['Analyze data'],
+  tasks: ['Process input'],
+};
+
+const memory = new Memory();
+const runner = new AgentRunner(agent, memory, './output');
+const result = await runner.run();
+```

@@ -1,0 +1,55 @@
+---
+title: "Orchestrator API"
+description: "Orchestrator class reference"
+---
+
+# Orchestrator API
+
+TypeScript API for the Orchestrator class.
+
+## Constructor
+
+```typescript
+const orchestrator = new Orchestrator(teamDir: string);
+```
+
+## Methods
+
+### `runAll()`
+
+Execute all agents in the team.
+
+```typescript
+await orchestrator.runAll();
+```
+
+Returns: `Promise<PipelineMetrics>`
+
+## PipelineMetrics
+
+```typescript
+interface PipelineMetrics {
+  totalAgents: number;
+  successfulAgents: number;
+  failedAgents: number;
+  startTime: number;
+  endTime?: number;
+  agentMetrics: Array<{
+    name: string;
+    status: 'success' | 'failed' | 'skipped';
+    duration: number;
+    error?: string;
+  }>;
+}
+```
+
+## Example
+
+```typescript
+import { Orchestrator } from 'hiveai';
+
+const orchestrator = new Orchestrator('teams/my-team');
+const metrics = await orchestrator.runAll();
+
+console.log(`Completed ${metrics.successfulAgents} agents`);
+```

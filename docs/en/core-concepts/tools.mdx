@@ -1,0 +1,135 @@
+---
+title: "Tools"
+description: "Giving agents capabilities beyond language"
+---
+
+# Tools System
+
+Tools give agents **capabilities beyond pure LLM reasoning**: reading files, scraping websites, calling APIs, and more.
+
+## How Tools Work
+
+1. **Define in YAML**: List tools in agent config
+2. **LLM calls tool**: AI decides when to use which tool
+3. **Tool executes**: Performs action (scrape, read, etc.)
+4. **Result returned**: LLM receives tool output
+5. **Continue**: LLM processes result and responds
+
+```yaml
+name: researcher
+tools:
+  - firecrawl      # Web scraping
+  - file-reader    # Read files
+```
+
+## Built-in Tools
+
+### file-reader
+Read and parse files (JSON, CSV, TXT, MD):
+```yaml
+tools:
+  - file-reader
+```
+
+The LLM can call:
+```json
+{
+  "tool": "file-reader",
+  "input": {
+    "filePath": "data/customers.csv"
+  }
+}
+```
+
+### firecrawl
+Scrape websites cleanly:
+```yaml
+tools:
+  - firecrawl
+```
+
+### serializer
+Save data to CSV:
+```yaml
+tools:
+  - serializer
+```
+
+## Tool Descriptions
+
+Each tool has a **description** automatically included in the agent's prompt:
+
+```
+You have access to these tools:
+- firecrawl: Use it to scrape and extract clean content from any website URL
+- file-reader: Use it to read and parse files (JSON, CSV, TXT, MD)
+```
+
+This helps the LLM understand **when** and **how** to use each tool.
+
+## Function Calling Flow
+
+```
+1. Agent prompt sent to LLM
+   ↓
+2. LLM decides to use tool
+   ↓
+3. Returns tool_call JSON
+   ↓
+4. HiveAI executes tool
+   ↓
+5. Result sent back to LLM
+   ↓
+6. LLM processes and responds
+```
+
+## Creating Custom Tools
+
+```typescript
+// src/tools/my-tool.ts
+export class MyTool implements Tool {
+  name = 'my-tool';
+  description = 'What your tool does and when to use it';
+  
+  async execute(input: unknown): Promise<unknown> {
+    const { param } = input as { param: string };
+    // Your logic here
+    return { result: 'data' };
+  }
+}
+```
+
+Register in `src/tools/index.ts`:
+```typescript
+import { MyTool } from '@/tools/my-tool.js';
+
+const registry: Record<string, Tool> = {
+  'my-tool': new MyTool(),
+  // ... other tools
+};
+```
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Write clear tool descriptions
+- Handle errors gracefully in tools
+- Keep tools focused on one task
+- Return structured data
+
+<Warning>**DON'T:**</Warning>
+- Create tools that are too complex
+- Forget error handling
+- Return unstructured text
+- Make tools dependent on each other
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Built-in Tools" icon="wrench" href="/docs/en/tools/built-in-tools">
+    See all available tools
+  </Card>
+  <Card title="Custom Tools" icon="code" href="/docs/en/tools/custom-tools">
+    Build your own tools
+  </Card>
+</CardGroup>

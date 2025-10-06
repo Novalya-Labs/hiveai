@@ -1,0 +1,193 @@
+---
+title: "Custom Prompts"
+description: "Master advanced prompting techniques"
+---
+
+# Custom Prompts
+
+Learn how to write effective prompts for your agents.
+
+## Anatomy of a Prompt
+
+```yaml
+prompts:
+  system: |
+    You are a specialized data analyst with expertise in market research.
+    You provide clear, data-driven insights with actionable recommendations.
+    Always return structured JSON output.
+  
+  user: |
+    Analyze the following market: {{MARKET_NAME}}
+    
+    Focus on:
+    1. Market size and growth
+    2. Key players and market share
+    3. Trends and opportunities
+    
+    Return JSON with:
+    - market_size: string
+    - growth_rate: number
+    - key_players: array
+    - trends: array
+```
+
+## System Prompt
+
+**Purpose:** Define role, behavior, and expertise
+
+### Good Examples
+
+```yaml
+# Data Analyst
+system: "You are a senior data analyst with 10 years of experience in statistical analysis. You provide clear insights backed by data."
+
+# Creative Writer
+system: "You are a creative copywriter specializing in engaging, conversational content. Use storytelling and vivid language."
+
+# Technical Expert
+system: "You are a technical architect who explains complex systems clearly. Use diagrams and examples."
+```
+
+## User Prompt
+
+**Purpose:** Specific task instructions
+
+### Best Practices
+
+1. **Be specific**: Instead of "analyze data", say "identify top 3 trends in Q4 sales"
+2. **Structure output**: Tell the LLM what format you want
+3. **Use examples**: Show the desired output format
+4. **Set constraints**: Word limits, format requirements, etc.
+
+### Template Example
+
+```yaml
+user: |
+  Task: {{TASK_TYPE}}
+  Data Source: {{DATA_SOURCE}}
+  Output Format: JSON
+  
+  Requirements:
+  1. Focus on {{FOCUS_AREA}}
+  2. Include quantitative metrics
+  3. Provide 3-5 recommendations
+  
+  Expected Output:
+  {
+    "summary": "string",
+    "metrics": {},
+    "recommendations": []
+  }
+```
+
+## Environment Variables
+
+Reference `.env` variables with `{{VAR_NAME}}`:
+
+```yaml
+prompts:
+  user: "Analyze {{COMPANY}} in {{REGION}} market"
+```
+
+```bash
+# .env
+COMPANY=Tesla
+REGION=Europe
+```
+
+Result: "Analyze Tesla in Europe market"
+
+## Auto-Generated Prompts
+
+If you don't specify custom prompts, HiveAI generates:
+
+```
+You are an autonomous agent executing a defined mission.
+
+You have access to these tools:
+- firecrawl: Use it to scrape and extract clean content from any website URL
+- file-reader: Use it to read and parse files (JSON, CSV, TXT, MD)
+
+Goals: Extract key insights; Analyze trends
+Tasks: Scrape competitor websites; Parse data files
+Return structured JSON output.
+```
+
+## Prompt Engineering Tips
+
+### 1. JSON Output
+
+```yaml
+user: |
+  Analyze the data and return JSON ONLY (no markdown, no explanation):
+  {
+    "insights": [],
+    "confidence": 0.0-1.0
+  }
+```
+
+### 2. Chain of Thought
+
+```yaml
+user: |
+  Think step by step:
+  1. Analyze the data
+  2. Identify patterns
+  3. Form conclusions
+  4. Provide recommendations
+```
+
+### 3. Few-Shot Examples
+
+```yaml
+user: |
+  Extract entities from text.
+  
+  Example 1:
+  Input: "Apple released iPhone in Cupertino"
+  Output: {"company": "Apple", "product": "iPhone", "location": "Cupertino"}
+  
+  Example 2:
+  Input: "Tesla opened factory in Berlin"
+  Output: {"company": "Tesla", "facility": "factory", "location": "Berlin"}
+  
+  Now extract from: {{INPUT_TEXT}}
+```
+
+### 4. Role + Context
+
+```yaml
+system: |
+  Role: Senior Financial Analyst at Goldman Sachs
+  Expertise: Tech sector valuations
+  Audience: C-level executives
+  Tone: Professional, data-driven
+```
+
+## Common Mistakes
+
+<Warning>
+**Avoid:**
+- Too vague: "analyze this"
+- Too long: 1000+ word prompts
+- No structure: Free-form requests
+- Conflicting instructions
+</Warning>
+
+## Testing Prompts
+
+1. **Start simple**: Test with basic prompt
+2. **Add structure**: Refine output format
+3. **Add constraints**: Temperature, length
+4. **Iterate**: Based on results
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Environment Variables" icon="key" href="/docs/en/guides/environment-variables">
+    Using environment variables
+  </Card>
+  <Card title="Examples" icon="code" href="/docs/en/examples/research-pipeline">
+    See prompts in action
+  </Card>
+</CardGroup>

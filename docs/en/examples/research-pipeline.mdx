@@ -1,0 +1,159 @@
+---
+title: "Research Pipeline"
+description: "Real 3-agent research pipeline example"
+---
+
+# Research Pipeline Example
+
+A real-world example: **3 agents collaborate** to research, analyze, and report.
+
+## Overview
+
+- **Agent 1**: Researcher - Finds information
+- **Agent 2**: Analyzer - Extracts insights
+- **Agent 3**: Reporter - Creates final report
+
+**Total time**: ~92 seconds | **Result**: Comprehensive research report
+
+## Setup
+
+```bash
+mkdir -p teams/research-pipeline
+cd teams/research-pipeline
+```
+
+## Agent 1: Researcher
+
+```yaml
+name: topic-researcher
+description: "Researches a topic and identifies key themes"
+
+llm:
+  provider: mistral
+  temperature: 0.5
+  max_tokens: 1500
+
+prompts:
+  system: "You are a research analyst specialized in identifying key themes."
+  user: |
+    Analyze the topic of "AI Agent Orchestration".
+    Return JSON with: concepts, use_cases, challenges
+
+goals:
+  - Identify key themes
+tasks:
+  - Analyze the topic
+  - Extract key concepts
+```
+
+## Agent 2: Analyzer
+
+```yaml
+name: insight-extractor
+depends_on: topic-researcher  # Waits for researcher
+
+llm:
+  provider: mistral
+  temperature: 0.6
+  max_tokens: 2000
+
+prompts:
+  system: "You are a strategic analyst."
+  user: |
+    Extract from the research:
+    1. Top 3 opportunities
+    2. Top 3 risks
+    3. Priority areas
+    
+    Return JSON format.
+
+goals:
+  - Extract actionable insights
+tasks:
+  - Analyze research
+  - Identify opportunities
+```
+
+## Agent 3: Reporter
+
+```yaml
+name: report-synthesizer
+depends_on:
+  - topic-researcher
+  - insight-extractor  # Multiple dependencies!
+
+llm:
+  provider: mistral
+  temperature: 0.4
+  max_tokens: 2500
+
+prompts:
+  system: "You are a senior analyst."
+  user: |
+    Create synthesis report with:
+    1. Executive Summary
+    2. Key Findings
+    3. Recommendations
+    4. Next Steps
+
+goals:
+  - Create comprehensive report
+tasks:
+  - Synthesize all findings
+
+output_result: final-research-report.json
+```
+
+## Run It
+
+```bash
+npx hiveai run research-pipeline
+```
+
+Output:
+```
+🚀 Starting pipeline with 3 agent(s)...
+
+[1/3] 🤖 Running agent: topic-researcher
+   ✅ Completed in 22.7s
+
+[2/3] 🤖 Running agent: insight-extractor
+   Dependencies: topic-researcher
+   📦 Loaded results from: topic-researcher
+   ✅ Completed in 36.9s
+
+[3/3] 🤖 Running agent: report-synthesizer
+   Dependencies: topic-researcher, insight-extractor
+   📦 Loaded results from: topic-researcher, insight-extractor
+   ✅ Completed in 32.6s
+
+📊 Pipeline Summary
+✅ Successful: 3
+⏱️  Total duration: 92.2s
+```
+
+## Results
+
+Check `teams/research-pipeline/output/`:
+- `topic-researcher.json`
+- `insight-extractor.json`
+- `final-research-report.json` ← Final report!
+
+## Key Takeaways
+
+1. **Dependencies work** - Agents wait for each other
+2. **Results auto-inject** - No manual data passing
+3. **Multi-LLM** - All Mistral, but could mix providers
+4. **Structured output** - JSON format throughout
+
+## Try It Yourself
+
+Modify the prompts to research YOUR topic:
+
+```yaml
+prompts:
+  user: |
+    Analyze the topic of "{{YOUR_TOPIC}}"
+```
+
+Then run: `npx hiveai run research-pipeline`

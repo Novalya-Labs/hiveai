@@ -1,0 +1,188 @@
+---
+title: "Orchestrator"
+description: "How HiveAI orchestrates multi-agent pipelines"
+---
+
+# Orchestrator
+
+The **Orchestrator** is the brain of HiveAI. It manages agent execution, resolves dependencies, and ensures everything runs in the correct order.
+
+## What Does It Do?
+
+1. **Loads agents** from YAML files in a team directory
+2. **Resolves dependencies** to determine execution order
+3. **Creates shared memory** for inter-agent communication
+4. **Executes agents** sequentially with proper error handling
+5. **Collects metrics** and displays a summary
+
+## How It Works
+
+```typescript
+const orchestrator = new Orchestrator('teams/my-team');
+await orchestrator.runAll();
+```
+
+### Execution Flow
+
+```
+1. Load YAML files
+   ↓
+2. Validate schemas
+   ↓
+3. Resolve dependency graph
+   ↓
+4. Create execution order
+   ↓
+5. Run agents sequentially
+   ↓
+6. Share results via memory
+   ↓
+7. Display summary
+```
+
+## Dependency Resolution
+
+The Orchestrator uses a **topological sort** algorithm to determine execution order.
+
+### Example
+
+```yaml
+# Agent A - no dependencies
+name: collector
+llm: mistral
+
+# Agent B - depends on A
+name: processor
+depends_on: collector
+
+# Agent C - depends on A and B
+name: reporter
+depends_on:
+  - collector
+  - processor
+```
+
+**Execution Order:** collector → processor → reporter
+
+## Circular Dependency Detection
+
+The Orchestrator detects circular dependencies and throws a clear error:
+
+```
+Error: Circular dependency detected involving agent: processor
+```
+
+### Invalid Example
+
+```yaml
+# Agent A depends on B
+name: agent-a
+depends_on: agent-b
+
+# Agent B depends on A (circular!)
+name: agent-b
+depends_on: agent-a
+```
+
+## Error Handling
+
+By default, the pipeline **stops** on first error. You can override this:
+
+```yaml
+name: optional-step
+on_error: continue  # Pipeline continues even if this fails
+```
+
+### Error Flow
+
+```
+Agent 1 ✅ Success
+   ↓
+Agent 2 ❌ Failed (on_error: stop)
+   ↓
+Agent 3 ⏭️  Skipped
+   ↓
+Pipeline Summary: 1 success, 1 failed, 1 skipped
+```
+
+## Pipeline Metrics
+
+The Orchestrator tracks:
+
+- **Total agents**: Number of agents in pipeline
+- **Successful**: Agents that completed
+- **Failed**: Agents that errored
+- **Skipped**: Agents not run due to previous failures
+- **Duration**: Time per agent and total time
+
+Example output:
+
+```
+============================================================
+📊 Pipeline Summary
+============================================================
+Total agents: 3
+✅ Successful: 3
+❌ Failed: 0
+⏭️  Skipped: 0
+⏱️  Total duration: 92.2s
+
+Agent Details:
+  ✅ topic-researcher (22.7s)
+  ✅ insight-extractor (36.9s)
+  ✅ report-synthesizer (32.6s)
+============================================================
+```
+
+## Shared Memory
+
+The Orchestrator creates a **Memory** instance shared by all agents:
+
+- Stores results from each agent
+- Persists to `cache.json` in team directory
+- Automatically injected into dependent agents' prompts
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Keep pipelines focused (3-7 agents ideal)
+- Use clear dependency chains
+- Set `on_error: continue` for optional steps
+- Monitor execution time per agent
+
+<Warning>**DON'T:**</Warning>
+- Create circular dependencies
+- Make every agent depend on all others
+- Forget to handle errors in critical paths
+
+## Advanced Patterns
+
+### Fan-Out Pattern
+
+```yaml
+# One agent feeds multiple
+Agent A
+  ├─→ Agent B
+  ├─→ Agent C
+  └─→ Agent D
+```
+
+### Convergence Pattern
+
+```yaml
+# Multiple agents feed one
+Agent A ─┐
+Agent B ─┼─→ Agent D (depends_on: [A, B, C])
+Agent C ─┘
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Memory System" icon="database" href="/docs/en/core-concepts/memory">
+    Learn about shared memory
+  </Card>
+  <Card title="Error Handling" icon="shield" href="/docs/en/guides/error-handling">
+    Build resilient pipelines
+  </Card>
+</CardGroup>

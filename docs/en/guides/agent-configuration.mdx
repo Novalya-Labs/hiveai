@@ -1,0 +1,146 @@
+---
+title: "Agent Configuration"
+description: "Complete guide to configuring agents"
+---
+
+# Agent Configuration Guide
+
+Everything you need to know about configuring HiveAI agents.
+
+## Complete Configuration
+
+```yaml
+name: research-agent
+description: "Optional description"
+
+llm:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 0.9
+
+prompts:
+  system: "You are a research assistant..."
+  user: "Research {{TOPIC}} and provide insights"
+
+tools:
+  - firecrawl
+  - file-reader
+
+goals:
+  - Extract key information
+  - Analyze data
+
+tasks:
+  - Scrape websites
+  - Process data
+
+depends_on: data-collector
+output_result: custom-output.json
+on_error: continue
+```
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Unique agent identifier |
+| `llm` | string\|object | LLM configuration |
+| `goals` | array | What to achieve (min 1) |
+| `tasks` | array | How to achieve it (min 1) |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | string | Agent description |
+| `prompts` | object | Custom prompts |
+| `tools` | array | Tool names |
+| `depends_on` | string\|array | Dependencies |
+| `output_result` | string | Custom filename |
+| `on_error` | string | `stop` or `continue` |
+
+## LLM Configuration
+
+### Simple
+
+```yaml
+llm: mistral
+```
+
+### Advanced
+
+```yaml
+llm:
+  provider: mistral
+  model: mistral-large-latest
+  temperature: 0.7
+  max_tokens: 2000
+```
+
+## Custom Prompts
+
+### System Prompt
+
+Defines agent's role:
+
+```yaml
+prompts:
+  system: "You are a data analyst specialized in trends."
+```
+
+### User Prompt
+
+Task description with variables:
+
+```yaml
+prompts:
+  user: "Analyze {{DATA_SOURCE}} for {{REGION}}"
+```
+
+Variables from `.env`:
+```bash
+DATA_SOURCE=sales-data.csv
+REGION=europe
+```
+
+## Validation Errors
+
+HiveAI validates configuration and shows clear errors:
+
+```
+❌ Error loading agent from analyst.yml:
+Agent configuration validation failed:
+  • name: Agent name is required
+  • goals: At least one goal is required
+  • llm.temperature: Number must be less than or equal to 2
+
+Please check your YAML file and fix the errors above.
+```
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Use descriptive names
+- Set appropriate temperature
+- Define clear goals
+- List concrete tasks
+- Start simple, add complexity gradually
+
+<Warning>**DON'T:**</Warning>
+- Use tabs (use 2 spaces)
+- Forget required fields
+- Create circular dependencies
+- Use same name twice
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Prompts" icon="message" href="/docs/en/guides/custom-prompts">
+    Advanced prompting techniques
+  </Card>
+  <Card title="Dependencies" icon="link" href="/docs/en/guides/dependencies">
+    Managing agent dependencies
+  </Card>
+</CardGroup>

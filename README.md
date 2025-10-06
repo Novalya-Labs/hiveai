@@ -212,7 +212,6 @@ Result: **3 agents collaborate automatically** to research, analyze, and report 
 
 - **[Data Processing Pipeline](https://docs.hiveai.dev/examples/data-processing)** - Extract, transform, validate, export
 - **[Web Scraping Workflow](https://docs.hiveai.dev/examples/web-scraping)** - Scrape → Process → Store
-- **[Content Generation](https://docs.hiveai.dev/examples/content-generation)** - Research → Write → Review
 
 ## 🏗️ Architecture
 

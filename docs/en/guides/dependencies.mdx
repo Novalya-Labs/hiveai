@@ -1,0 +1,201 @@
+---
+title: "Dependencies"
+description: "Managing agent dependencies"
+---
+
+# Agent Dependencies
+
+Learn how to create sophisticated multi-agent workflows with dependencies.
+
+## Basic Dependency
+
+```yaml
+name: analyzer
+depends_on: researcher  # Single dependency
+```
+
+Execution order: `researcher` → `analyzer`
+
+## Multiple Dependencies
+
+```yaml
+name: reporter
+depends_on:
+  - researcher
+  - analyzer
+  - validator
+```
+
+Execution order: All 3 dependencies complete → `reporter` runs
+
+## Automatic Data Injection
+
+When an agent has dependencies, **results are automatically injected** into its prompt:
+
+```yaml
+name: insight-extractor
+depends_on: data-researcher
+prompts:
+  user: "Extract insights from the research provided"
+```
+
+The agent receives:
+
+```
+Results from previous agents:
+
+### data-researcher:
+{
+  "findings": [...],
+  "data": {...}
+}
+
+Extract insights from the research provided
+```
+
+## Dependency Patterns
+
+### 1. Sequential Chain
+
+```
+A → B → C → D
+```
+
+```yaml
+# Agent B
+depends_on: A
+
+# Agent C
+depends_on: B
+
+# Agent D
+depends_on: C
+```
+
+### 2. Fan-Out
+
+```
+    ┌→ B
+A ──┼→ C
+    └→ D
+```
+
+```yaml
+# Agent B, C, D all depend on A
+depends_on: A
+```
+
+### 3. Convergence
+
+```
+A ─┐
+B ─┼→ D
+C ─┘
+```
+
+```yaml
+# Agent D
+depends_on:
+  - A
+  - B
+  - C
+```
+
+### 4. Diamond
+
+```
+    ┌→ B ─┐
+A ──┤     ├→ E
+    └→ C ─┘
+    
+Also: D (no deps)
+```
+
+Execution order: `A`, `D` → `B`, `C` → `E`
+
+## Circular Dependencies
+
+**Not allowed:**
+
+```yaml
+# Agent A
+depends_on: B
+
+# Agent B
+depends_on: A  # ❌ Circular!
+```
+
+Error:
+```
+Error: Circular dependency detected involving agent: A
+```
+
+## Error Handling
+
+By default, pipeline **stops** if a dependency fails:
+
+```
+A ✅ → B ❌ → C ⏭️ Skipped
+```
+
+Override with:
+
+```yaml
+name: optional-step
+on_error: continue  # Pipeline continues
+```
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Keep dependency chains short (3-5 agents)
+- Use meaningful names for clarity
+- Document why agents depend on each other
+- Test each agent independently first
+
+<Warning>**DON'T:**</Warning>
+- Create circular dependencies
+- Make every agent depend on all others
+- Forget to validate dependency outputs
+- Rely on implicit execution order
+
+## Debugging Dependencies
+
+### Visualize Your Pipeline
+
+```
+Agent A (no deps)
+  ↓
+Agent B (depends_on: A)
+  ↓
+Agent C (depends_on: B)
+  ├→ Agent D (depends_on: C)
+  └→ Agent E (depends_on: C)
+```
+
+### Check Execution Order
+
+Run with verbose logging:
+```bash
+hiveai run my-team
+```
+
+Output shows order:
+```
+[1/5] Agent A
+[2/5] Agent B (Dependencies: A)
+[3/5] Agent C (Dependencies: B)
+[4/5] Agent D (Dependencies: C)
+[5/5] Agent E (Dependencies: C)
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Error Handling" icon="shield" href="/docs/en/guides/error-handling">
+    Handle failures gracefully
+  </Card>
+  <Card title="First Pipeline" icon="rocket" href="/docs/en/get-started/first-pipeline">
+    Build a multi-agent pipeline
+  </Card>
+</CardGroup>

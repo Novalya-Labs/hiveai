@@ -1,0 +1,47 @@
+---
+title: "Built-in Tools"
+description: "Tools available in HiveAI"
+---
+
+# Built-in Tools
+
+HiveAI includes several built-in tools ready to use.
+
+## Available Tools
+
+<CardGroup cols={2}>
+  <Card title="file-reader" icon="file">
+    Read JSON, CSV, TXT, MD files
+  </Card>
+  <Card title="firecrawl" icon="globe">
+    Web scraping with Firecrawl API
+  </Card>
+  <Card title="serializer" icon="table">
+    Convert data to CSV
+  </Card>
+</CardGroup>
+
+## Usage
+
+```yaml
+tools:
+  - file-reader
+  - firecrawl
+  - serializer
+```
+
+The LLM automatically gets descriptions and knows when to use each tool.
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="file-reader" href="/docs/en/tools/file-reader">
+    File Reader details
+  </Card>
+  <Card title="firecrawl" href="/docs/en/tools/firecrawl">
+    Firecrawl details
+  </Card>
+  <Card title="Custom Tools" href="/docs/en/tools/custom-tools">
+    Build your own
+  </Card>
+</CardGroup>

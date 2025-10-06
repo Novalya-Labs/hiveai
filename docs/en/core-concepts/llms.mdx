@@ -1,0 +1,152 @@
+---
+title: "LLMs"
+description: "Multi-LLM support in HiveAI"
+---
+
+# LLM Support
+
+HiveAI supports **multiple LLM providers** in a single pipeline. Use the best model for each task.
+
+## Supported Providers
+
+<CardGroup cols={3}>
+  <Card title="OpenAI" icon="brain">
+    GPT-4o, GPT-4o-mini, GPT-4-turbo
+  </Card>
+  <Card title="Anthropic" icon="sparkles">
+    Claude 3.5 Sonnet, Claude 3 Opus
+  </Card>
+  <Card title="Mistral AI" icon="zap">
+    Mistral Large, Mistral Medium
+  </Card>
+</CardGroup>
+
+## Configuration
+
+### Simple Format
+
+```yaml
+llm: mistral
+```
+
+Uses default model and settings.
+
+### Advanced Format
+
+```yaml
+llm:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 0.9
+```
+
+## Provider Details
+
+### OpenAI
+
+```yaml
+llm:
+  provider: openai
+  model: gpt-4o-mini        # or gpt-4o, gpt-4-turbo
+  temperature: 0.7          # 0-2
+  max_tokens: 2000
+```
+
+**Best for:**
+- General tasks
+- Function calling
+- Fast responses
+
+### Anthropic (Claude)
+
+```yaml
+llm:
+  provider: claude
+  model: claude-3-5-sonnet-20241022
+  temperature: 0.6
+  max_tokens: 4000
+```
+
+**Best for:**
+- Long contexts
+- Complex reasoning
+- Nuanced responses
+
+### Mistral AI
+
+```yaml
+llm:
+  provider: mistral
+  model: mistral-large-latest
+  temperature: 0.7
+  max_tokens: 1500
+```
+
+**Best for:**
+- Cost-effective
+- Fast inference
+- European data compliance
+
+## Temperature Guide
+
+| Value | Use Case | Examples |
+|-------|----------|----------|
+| 0.1-0.3 | Factual, deterministic | Data extraction, classification |
+| 0.4-0.7 | Balanced | General tasks, analysis |
+| 0.8-1.2 | Creative | Content generation, brainstorming |
+
+## Multi-LLM Pipelines
+
+Use different LLMs for different agents:
+
+```yaml
+# Agent 1 - Fast research
+name: researcher
+llm:
+  provider: mistral
+  temperature: 0.5
+
+# Agent 2 - Deep analysis
+name: analyzer
+llm:
+  provider: claude
+  temperature: 0.4
+
+# Agent 3 - Final report
+name: reporter
+llm:
+  provider: openai
+  model: gpt-4o
+  temperature: 0.7
+```
+
+## Cost Optimization
+
+**Strategies:**
+1. Use **cheaper models** for simple tasks
+2. Set **lower max_tokens** when possible
+3. Use **Mistral** for bulk operations
+4. Reserve **GPT-4** for critical decisions
+
+## Error Handling
+
+All LLM clients include:
+- **3 automatic retries** with exponential backoff
+- **Clear error messages**
+- **API key validation**
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="OpenAI" icon="brain" href="/docs/en/llms/openai">
+    OpenAI configuration
+  </Card>
+  <Card title="Anthropic" icon="sparkles" href="/docs/en/llms/anthropic">
+    Claude configuration
+  </Card>
+  <Card title="Mistral" icon="zap" href="/docs/en/llms/mistral">
+    Mistral configuration
+  </Card>
+</CardGroup>

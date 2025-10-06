@@ -1,0 +1,60 @@
+---
+title: "File Reader"
+description: "Read and parse files"
+---
+
+# File Reader Tool
+
+Read and parse files (JSON, CSV, TXT, MD).
+
+## Usage
+
+```yaml
+tools:
+  - file-reader
+```
+
+## Supported Formats
+
+- **JSON**: Parsed as objects
+- **CSV**: Converted to array of objects
+- **TXT/MD**: Raw text content
+
+## LLM Usage
+
+The LLM can call:
+
+```json
+{
+  "tool": "file-reader",
+  "input": {
+    "filePath": "data/customers.csv"
+  }
+}
+```
+
+Result:
+
+```json
+{
+  "content": [
+    {"name": "John", "email": "john@example.com"},
+    {"name": "Jane", "email": "jane@example.com"}
+  ],
+  "format": "csv",
+  "size": 1024
+}
+```
+
+## Example
+
+```yaml
+name: data-processor
+tools:
+  - file-reader
+goals:
+  - Process customer data
+tasks:
+  - Read customers.csv
+  - Extract insights
+```

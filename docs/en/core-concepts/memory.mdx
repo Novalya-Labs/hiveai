@@ -1,0 +1,91 @@
+---
+title: "Memory"
+description: "How agents share data and results"
+---
+
+# Shared Memory
+
+The **Memory** system allows agents to share data and access results from previous agents in the pipeline.
+
+## How It Works
+
+Memory is a simple key-value store:
+- **Keys**: Agent names
+- **Values**: Agent results (JSON)
+- **Storage**: Both in-memory and persisted to `cache.json`
+
+```typescript
+// Agent 1 runs
+memory.set('agent-1', { result: 'data' });
+
+// Agent 2 accesses it
+const previousResult = memory.get('agent-1');
+```
+
+## Automatic Injection
+
+When an agent has dependencies, **results are automatically injected** into its prompt:
+
+```yaml
+name: analyzer
+depends_on: researcher  # Results auto-injected
+```
+
+The analyzer receives:
+
+```
+Results from previous agents:
+
+### researcher:
+{
+  "concepts": [...],
+  "insights": [...]
+}
+
+[Your custom prompt continues...]
+```
+
+## Cache Persistence
+
+Memory is saved to `teams/your-team/cache.json`:
+
+```json
+{
+  "researcher": {
+    "content": "...",
+    "toolCalls": []
+  },
+  "analyzer": {
+    "content": "...",
+    "toolCalls": []
+  }
+}
+```
+
+This allows:
+- **Debugging**: Inspect what each agent produced
+- **Resume**: Restart pipeline from any point (future feature)
+- **Audit**: Track complete execution history
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Keep agent outputs focused and structured
+- Use JSON format for easy parsing
+- Clear cache between major changes
+
+<Warning>**DON'T:**</Warning>
+- Store sensitive data in cache
+- Make outputs too large (>10MB)
+- Rely on cache for production data
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Dependencies" icon="link" href="/docs/en/guides/dependencies">
+    Learn about agent dependencies
+  </Card>
+  <Card title="Tools" icon="wrench" href="/docs/en/core-concepts/tools">
+    Understand the tools system
+  </Card>
+</CardGroup>

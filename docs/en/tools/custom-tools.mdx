@@ -1,0 +1,62 @@
+---
+title: "Custom Tools"
+description: "Build your own tools"
+---
+
+# Custom Tools
+
+Create custom tools to extend HiveAI's capabilities.
+
+## Tool Interface
+
+```typescript
+export interface Tool {
+  name: string;
+  description: string;
+  execute(input: unknown): Promise<unknown>;
+}
+```
+
+## Creating a Tool
+
+```typescript
+// src/tools/my-tool.ts
+export class MyTool implements Tool {
+  name = 'my-tool';
+  description = 'What your tool does and when to use it';
+  
+  async execute(input: unknown): Promise<unknown> {
+    const { param } = input as { param: string };
+    
+    // Your tool logic
+    const result = await processData(param);
+    
+    return { result };
+  }
+}
+```
+
+## Register Tool
+
+```typescript
+// src/tools/index.ts
+import { MyTool } from '@/tools/my-tool.js';
+
+const registry: Record<string, Tool> = {
+  'my-tool': new MyTool(),
+  // ... other tools
+};
+```
+
+## Best Practices
+
+<Check>**DO:**</Check>
+- Write clear descriptions
+- Handle errors gracefully
+- Return structured data
+- Keep tools focused
+
+<Warning>**DON'T:**</Warning>
+- Make tools too complex
+- Forget error handling
+- Return unstructured text
